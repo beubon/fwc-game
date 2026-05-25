@@ -3,275 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FWC Club - Stake & Predict</title>
+    <title>FWC Club - World Cup 2026</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {margin: 0; padding: 0; box-sizing: border-box;}
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0A0A0F;
+            font-family: 'Space Grotesk', sans-serif;
+            background: #000;
             color: #fff;
-            padding: 16px;
+            overflow-x: hidden;
+        }
+       .container {
             min-height: 100vh;
+            background: linear-gradient(180deg, #0a0e27 0%, #000000 100%);
+            position: relative;
         }
-        .container {max-width: 500px; margin: 0 auto;}
-        .header {
-            text-align: center;
+       .bg-glow {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+       .content {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+       .club-banner {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            border-radius: 24px;
+            overflow: hidden;
             margin-bottom: 24px;
+            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 50%, #8E2DE2 100%);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            box-shadow: 0 8px 40px rgba(0, 210, 255, 0.2);
+        }
+       .club-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+       .banner-fallback {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 50%, #8E2DE2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+       .club-banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
             padding: 20px;
-            background: linear-gradient(135deg, rgba(0,210,255,0.1), rgba(58,123,213,0.1));
-            border-radius: 20px;
-            border: 1px solid rgba(0,210,255,0.2);
         }
-        .header h1 {
-            font-size: 28px; font-weight: 800;
-            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+       .club-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
         }
-        .header .balance {
-            font-size: 14px; color: #00d2ff; font-weight: 600;
+       .club-sub {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
         }
-        .card {
-            background: rgba(255, 255, 255, 0.03);
+       .card {
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px; padding: 20px; margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(40px);
         }
-        .card-title {
-            font-size: 14px; font-weight: 700; color: #00d2ff;
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+       .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
         }
-        #ton-connect {margin: 16px 0; display: flex; justify-content: center;}
-        .wallet-info {
-            background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 12px; padding: 12px; margin-top: 12px;
-            display: none; font-size: 13px;
+       .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #00D2FF, #3A7BD5);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
         }
-        .match {
-            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+       .card-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        #ton-connect {
+            margin: 12px 0;
+            display: flex;
+            justify-content: center;
+        }
+       .wallet-box {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+       .wallet-box.active {display: block;}
+       .wallet-label {
+            font-size: 10px;
+            color: #00D2FF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+       .wallet-addr {
+            font-size: 13px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+       .how-to {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+       .step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+       .step-num {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 210, 255, 0.2);
+            border: 1px solid #00D2FF;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #00D2FF;
+        }
+       .step-text {
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+       .match-select {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+        }
+       .match-select:focus {
+            outline: none;
+            border-color: #00D2FF;
+        }
+       .match-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; padding: 16px; margin-bottom: 12px;
+            border-radius: 16px;
+            padding: 20px;
         }
-        .match-time {
-            font-size: 11px; color: #888; margin-bottom: 12px;
-            text-transform: uppercase; letter-spacing: 0.5px;
+       .match-time {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .match-teams {
-            display: flex; justify-content: space-between; align-items: center;
+       .teams-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+       .team-box {
+            flex: 1;
+            text-align: center;
+        }
+       .team-flag {
+            font-size: 48px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        }
+       .team-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+       .team-odds {
+            font-size: 11px;
+            color: #00D2FF;
+            font-weight: 600;
+        }
+       .vs-divider {
+            padding: 0 16px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 800;
+        }
+       .score-section {
+            margin-bottom: 20px;
+        }
+       .score-label {
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+       .score-inputs {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+        }
+       .score-input {
+            width: 80px;
+            height: 70px;
+            background: rgba(255,255,255,0.06);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            color: #fff;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+       .score-input:focus {
+            outline: none;
+            border-color: #00D2FF;
+            background: rgba(0, 210, 255, 0.15);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+       .score-sep {
+            font-size: 32px;
+            color: #333;
+            font-weight: 700;
+        }
+       .stake-info {
+            background: rgba(0, 210, 255, 0.08);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
             margin-bottom: 16px;
         }
-        .team {
-            flex: 1; text-align: center;
+       .stake-label {
+            font-size: 11px;
+            color: #00D2FF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
         }
-        .team-name {
-            font-size: 16px; font-weight: 700; margin-bottom: 4px;
+       .stake-amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
         }
-        .team-flag {
-            font-size: 32px; margin-bottom: 8px;
-        }
-        .vs {
-            padding: 0 12px; color: #555; font-weight: 800; font-size: 14px;
-        }
-        .score-inputs {
-            display: flex; gap: 12px; align-items: center; justify-content: center;
-            margin-bottom: 16px;
-        }
-        .score-inputs input {
-            width: 60px; height: 60px;
-            background: rgba(255,255,255,0.08);
-            border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 12px; color: #fff; text-align: center;
-            font-size: 24px; font-weight: 800; font-family: 'Inter', sans-serif;
-        }
-        .score-inputs input:focus {
-            outline: none; border-color: #00d2ff;
-            background: rgba(0,210,255,0.1);
-        }
-        .score-inputs span {font-size: 24px; font-weight: 800; color: #555;}
-        .stake-box {
-            background: rgba(0,210,255,0.08);
-            border: 1px solid rgba(0,210,255,0.3);
-            border-radius: 12px; padding: 14px; margin-bottom: 12px;
-        }
-        .stake-label {
-            font-size: 11px; color: #00d2ff; font-weight: 600;
-            text-transform: uppercase; margin-bottom: 6px;
-        }
-        .stake-amount {
-            font-size: 20px; font-weight: 800; color: #fff;
-        }
-        .btn-bet {
-            width: 100%; padding: 16px;
+       .btn-bet {
+            width: 100%;
+            padding: 18px;
             background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%);
-            border: none; border-radius: 12px; color: white;
-            font-size: 15px; font-weight: 700; cursor: pointer;
-            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
             box-shadow: 0 4px 20px rgba(0, 210, 255, 0.4);
         }
-        .btn-bet:disabled {
-            opacity: 0.3; cursor: not-allowed; box-shadow: none;
-        }
-        .pot-info {
-            text-align: center; font-size: 11px; color: #666; margin-top: 8px;
+       .btn-bet:active {transform: scale(0.98);}
+       .btn-bet:disabled {opacity: 0.3; cursor: not-allowed; box-shadow: none;}
+       .pot-info {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>FWC CLUB</h1>
-            <div class="balance">Balance: 10,000 $FWC</div>
-        </div>
+        <div class="bg-glow"></div>
+        <div class="content">
+            <div class="club-banner">
+                <img src="banner-ready.jpg" alt="FWC Club" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="banner-fallback" style="display:none;">⚽</div>
+                <div class="club-banner-overlay">
+                    <div class="club-title">FWC CLUB</div>
+                    <div class="club-sub">Predict World Cup 2026 • Win $FWC</div>
+                </div>
+            </div>
 
-        <div class="card">
-            <div class="card-title">Connect Wallet</div>
-            <div id="ton-connect"></div>
-            <div class="wallet-info" id="wallet-info">
-                ✅ Connected: <span id="wallet-address"></span>
+            <div class="card">
+                <div class="card-header">
+                    <div class="badge">1</div>
+                    <div class="card-title">Connect Telegram Wallet</div>
+                </div>
+                <div id="ton-connect"></div>
+                <div class="wallet-box" id="wallet-box">
+                    <div class="wallet-label">Connected</div>
+                    <div class="wallet-addr" id="wallet-addr"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="badge">2</div>
+                    <div class="card-title">How to Play</div>
+                </div>
+                <div class="how-to">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-text">Connect Telegram Wallet</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-text">Select any match below</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-text">Predict exact score</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">4</div>
+                        <div class="step-text">Stake minimum 1,000 $FWC</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="badge">3</div>
+                    <div class="card-title">Place Your Bet</div>
+                </div>
+
+                <select class="match-select" id="match-select" onchange="updateMatch()">
+                    <option value="1">🇧🇷 Brazil vs Argentina 🇦🇷 • Dec 10, 20:00 UTC</option>
+                    <option value="2">🇫🇷 France vs England 🏴󐁧󐁢󐁥󐁮󐁧󐁿 • Dec 11, 23:00 UTC</option>
+                    <option value="3">🇩🇪 Germany vs Spain 🇪🇸 • Dec 12, 20:00 UTC</option>
+                    <option value="4">🇵🇹 Portugal vs Netherlands 🇳🇱 • Dec 13, 23:00 UTC</option>
+                    <option value="5">🇮🇹 Italy vs Belgium 🇧🇪 • Dec 14, 20:00 UTC</option>
+                </select>
+
+                <div class="match-box">
+                    <div class="match-time" id="match-time">DEC 10 • 20:00 UTC</div>
+                    <div class="teams-row">
+                        <div class="team-box">
+                            <div class="team-flag" id="flag1">🇧🇷</div>
+                            <div class="team-name" id="team1">Brazil</div>
+                            <div class="team-odds">1.85</div>
+                        </div>
+                        <div class="vs-divider">VS</div>
+                        <div class="team-box">
+                            <div class="team-flag" id="flag2">🇦🇷</div>
+                            <div class="team-name" id="team2">Argentina</div>
+                            <div class="team-odds">2.10</div>
+                        </div>
+                    </div>
+
+                    <div class="score-section">
+                        <div class="score-label">Predict Exact Score</div>
+                        <div class="score-inputs">
+                            <input type="number" class="score-input" id="score1" placeholder="0" min="0" max="20">
+                            <span class="score-sep">:</span>
+                            <input type="number" class="score-input" id="score2" placeholder="0" min="0" max="20">
+                        </div>
+                    </div>
+
+                    <div class="stake-info">
+                        <div class="stake-label">Minimum Stake Required</div>
+                        <div class="stake-amount">1,000 $FWC</div>
+                    </div>
+
+                    <button class="btn-bet" id="btn-bet" onclick="placeBet()" disabled>
+                        Connect Wallet First
+                    </button>
+                    <div class="pot-info">Total Pot: 45,230 $FWC</div>
+                </div>
             </div>
         </div>
-
-        <div id="matches-container"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
-        tg.setHeaderColor('#0A0A0F');
+        tg.setHeaderColor('#0a0e27');
 
-        // Force Tonkeeper + MyTonWallet, bỏ Telegram Wallet
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://beubon.github.io/fwc-game/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect',
-            uiPreferences: {
-                theme: 'DARK'
-            },
-            walletsListConfiguration: {
-                includeWallets: [
-                    {
-                        appName: "tonkeeper",
-                        name: "Tonkeeper",
-                        imageUrl: "https://tonkeeper.com/assets/tonconnect-icon.png",
-                        aboutUrl: "https://tonkeeper.com",
-                        universalLink: "https://app.tonkeeper.com/ton-connect",
-                        bridgeUrl: "https://bridge.tonapi.io/bridge",
-                        platforms: ["ios", "android", "chrome", "firefox"]
-                    },
-                    {
-                        appName: "mytonwallet",
-                        name: "MyTonWallet",
-                        imageUrl: "https://static.mytonwallet.io/icon-256.png",
-                        aboutUrl: "https://mytonwallet.io",
-                        universalLink: "https://connect.mytonwallet.io/tonconnect",
-                        bridgeUrl: "https://tonconnectbridge.mytonwallet.io/bridge",
-                        platforms: ["ios", "android", "chrome", "firefox"]
-                    }
-                ]
-            }
+            buttonRootId: 'ton-connect'
         });
 
-        const matches = [
-            {id: 1, team1: 'Brazil', flag1: '🇧🇷', team2: 'Argentina', flag2: '🇦🇷', time: 'Dec 10, 20:00 UTC', pot: '45,230'},
-            {id: 2, team1: 'France', flag1: '🇫🇷', team2: 'England', flag2: '🏴󐁧󐁢󐁥󐁮󐁧󐁿', time: 'Dec 11, 23:00 UTC', pot: '38,100'},
-            {id: 3, team1: 'Germany', flag1: '🇩🇪', team2: 'Spain', flag2: '🇪🇸', time: 'Dec 12, 20:00 UTC', pot: '52,890'},
-            {id: 4, team1: 'Portugal', flag1: '🇵🇹', team2: 'Netherlands', flag2: '🇳🇱', time: 'Dec 13, 23:00 UTC', pot: '31,450'},
-            {id: 5, team1: 'Italy', flag1: '🇮🇹', team2: 'Belgium', flag2: '🇧🇪', time: 'Dec 14, 20:00 UTC', pot: '28,670'}
-        ];
+        const matches = {
+            1: {t1: 'Brazil', t2: 'Argentina', f1: '🇧🇷', f2: '🇦🇷', time: 'DEC 10 • 20:00 UTC', pot: '45,230'},
+            2: {t1: 'France', t2: 'England', f1: '🇫🇷', f2: '🏴󐁧󐁢󐁥󐁮󐁧󐁿', time: 'DEC 11 • 23:00 UTC', pot: '38,700'},
+            3: {t1: 'Germany', t2: 'Spain', f1: '🇩🇪', f2: '🇪🇸', time: 'DEC 12 • 20:00 UTC', pot: '52,100'},
+            4: {t1: 'Portugal', t2: 'Netherlands', f1: '🇵🇹', f2: '🇳🇱', time: 'DEC 13 • 23:00 UTC', pot: '29,400'},
+            5: {t1: 'Italy', t2: 'Belgium', f1: '🇮🇹', f2: '🇧🇪', time: 'DEC 14 • 20:00 UTC', pot: '41,800'}
+        };
 
-        let userWallet = null;
+        let connected = false;
+        let currentMatch = 1;
 
-        function renderMatches() {
-            const container = document.getElementById('matches-container');
-            container.innerHTML = matches.map(m => `
-                <div class="card">
-                    <div class="match-time">${m.time}</div>
-                    <div class="match-teams">
-                        <div class="team">
-                            <div class="team-flag">${m.flag1}</div>
-                            <div class="team-name">${m.team1}</div>
-                        </div>
-                        <div class="vs">VS</div>
-                        <div class="team">
-                            <div class="team-flag">${m.flag2}</div>
-                            <div class="team-name">${m.team2}</div>
-                        </div>
-                    </div>
-                    <div class="score-inputs">
-                        <input type="number" id="score1-${m.id}" placeholder="0" min="0" max="20">
-                        <span>:</span>
-                        <input type="number" id="score2-${m.id}" placeholder="0" min="0" max="20">
-                    </div>
-                    <div class="stake-box">
-                        <div class="stake-label">Stake Amount</div>
-                        <div class="stake-amount">1,000 $FWC</div>
-                    </div>
-                    <button class="btn-bet" id="btn-${m.id}" onclick="placeBet(${m.id})" disabled>
-                        Connect Wallet First
-                    </button>
-                    <div class="pot-info">Total Pot: ${m.pot} $FWC</div>
-                </div>
-            `).join('');
+        function updateMatch() {
+            currentMatch = document.getElementById('match-select').value;
+            const m = matches[currentMatch];
+            document.getElementById('team1').textContent = m.t1;
+            document.getElementById('team2').textContent = m.t2;
+            document.getElementById('flag1').textContent = m.f1;
+            document.getElementById('flag2').textContent = m.f2;
+            document.getElementById('match-time').textContent = m.time;
+            document.querySelector('.pot-info').textContent = `Total Pot: ${m.pot} $FWC`;
         }
 
-        function updateButtons() {
-            matches.forEach(m => {
-                const btn = document.getElementById(`btn-${m.id}`);
-                if (btn) {
-                    if (userWallet) {
-                        btn.disabled = false;
-                        btn.textContent = 'STAKE 1000 $FWC & Predict';
-                    } else {
-                        btn.disabled = true;
-                        btn.textContent = 'Connect Wallet First';
-                    }
-                }
-            });
+        function updateBtn() {
+            const btn = document.getElementById('btn-bet');
+            btn.disabled =!connected;
+            btn.textContent = connected? 'STAKE 1000 $FWC & Predict' : 'Connect Wallet First';
         }
 
-        function placeBet(matchId) {
-            const score1 = document.getElementById(`score1-${matchId}`).value;
-            const score2 = document.getElementById(`score2-${matchId}`).value;
+        function placeBet() {
+            const s1 = document.getElementById('score1').value;
+            const s2 = document.getElementById('score2').value;
 
-            if (!score1 || !score2) {
-                tg.showAlert('Please enter both scores!');
+            if (!s1 ||!s2) {
+                tg.showAlert('Please enter both scores');
                 tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
-            const match = matches.find(m => m.id === matchId);
+            const m = matches[currentMatch];
+            tg.HapticFeedback.impactOccurred('medium');
             tg.showConfirm(
-                `Confirm Bet:\n\n${match.team1} ${score1} - ${score2} ${match.team2}\n\nStake: 1,000 $FWC`,
-                (confirmed) => {
-                    if (confirmed) {
+                `Confirm Bet:\n\n${m.f1} ${m.t1} ${s1} - ${s2} ${m.t2} ${m.f2}\n\nStake: 1,000 $FWC`,
+                (ok) => {
+                    if (ok) {
                         tg.HapticFeedback.notificationOccurred('success');
-                        tg.showAlert(`Bet placed successfully!\n\n1,000 $FWC staked on ${match.team1} ${score1}-${score2} ${match.team2}\n\nGood luck! 🎉`);
+                        tg.showAlert(`Bet placed successfully!\n\n1,000 $FWC staked\n\nGood luck! 🍀`);
+                        document.getElementById('score1').value = '';
+                        document.getElementById('score2').value = '';
                     }
                 }
             );
         }
 
-        tonConnectUI.onStatusChange(wallet => {
-            const walletInfo = document.getElementById('wallet-info');
-            const walletAddress = document.getElementById('wallet-address');
-            
-            if (wallet) {
-                userWallet = wallet;
-                const address = wallet.account.address;
-                walletAddress.textContent = address.slice(0, 8) + '...' + address.slice(-6);
-                walletInfo.style.display = 'block';
-                updateButtons();
+        tonConnectUI.onStatusChange(w => {
+            const box = document.getElementById('wallet-box');
+            const addr = document.getElementById('wallet-addr');
+            if (w) {
+                connected = true;
+                addr.textContent = w.account.address.slice(0, 8) + '...' + w.account.address.slice(-6);
+                box.classList.add('active');
                 tg.HapticFeedback.notificationOccurred('success');
             } else {
-                userWallet = null;
-                walletInfo.style.display = 'none';
-                updateButtons();
+                connected = false;
+                box.classList.remove('active');
             }
+            updateBtn();
         });
 
-        renderMatches();
-        updateButtons();
+        updateMatch();
+        updateBtn();
     </script>
 </body>
 </html>
