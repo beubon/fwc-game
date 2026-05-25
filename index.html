@@ -3,266 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FWC Club - World Cup 2026 Predict & Earn</title>
+    <title>FWC Predict - World Cup 2026</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * {margin: 0; padding: 0; box-sizing: border-box;}
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0D0D0D;
-            color: #FFFFFF;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0A0A0A; color: #fff; padding: 16px; min-height: 100vh;
         }
-        .container {
-            max-width: 100%;
-            min-height: 100vh;
-            padding: 24px 16px 40px;
-            background: radial-gradient(ellipse at top, #1a1a2e 0%, #0D0D0D 60%);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        .header img {
-            width: 100%;
-            max-width: 380px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0, 210, 255, 0.2);
-        }
+        .container {max-width: 500px; margin: 0 auto;}
+        .header {text-align: center; margin-bottom: 20px;}
+        .header img {width: 100%; max-width: 400px; border-radius: 16px; margin-bottom: 12px;}
         .header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            color: #8B8B8B;
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 24px; margin-bottom: 4px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 16px;
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 16px; margin-bottom: 16px;
         }
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #00D2FF;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .step {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background: #00D2FF;
-            color: #0D0D0D;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        #ton-connect {
-            margin: 16px 0 8px;
-            display: flex;
-            justify-content: center;
-        }
-        .wallet-connected {
-            background: rgba(0, 210, 255, 0.08);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 14px;
-            padding: 14px;
-            margin-top: 16px;
-            display: none;
-        }
-        .wallet-label {
-            font-size: 11px;
-            color: #00D2FF;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-        .wallet-address {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-        }
-        .match-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 16px 0;
+        .card h2 {font-size: 16px; margin-bottom: 12px; color: #00d2ff;}
+        #ton-connect {margin: 12px 0; display: flex; justify-content: center;}
+        .wallet-info {
+            background: rgba(0, 210, 255, 0.1); border: 1px solid #00d2ff;
+            border-radius: 12px; padding: 10px; margin: 12px 0;
+            text-align: center; display: none; font-size: 12px;
         }
         .match {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: rgba(255,255,255,0.03); border-radius: 12px; 
+            padding: 12px; margin-bottom: 12px;
         }
-        .team {
-            flex: 1;
-            text-align: center;
-            font-weight: 600;
-            font-size: 15px;
+        .match-header {
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 10px; font-size: 12px; color: #888;
         }
-        .vs {
-            padding: 0 16px;
-            color: #555;
-            font-weight: 700;
-            font-size: 12px;
+        .teams {
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 12px; font-weight: 600;
         }
-        .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%);
-            border: none;
-            border-radius: 14px;
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            margin-top: 16px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.3);
+        .team {flex: 1; text-align: center;}
+        .vs {padding: 0 8px; color: #666;}
+        .score-input {
+            display: flex; gap: 8px; align-items: center; justify-content: center;
+            margin-bottom: 10px;
         }
-        .btn-primary:active {
-            transform: scale(0.98);
+        .score-input input {
+            width: 50px; padding: 8px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+            color: #fff; text-align: center; font-size: 16px; font-weight: 700;
         }
-        .btn-primary:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            box-shadow: none;
+        .bet-amount {
+            display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
         }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        .bet-amount input {
+            flex: 1; padding: 10px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+            color: #fff; font-size: 14px;
         }
-        .footer-text {
-            color: #555;
-            font-size: 12px;
-            font-weight: 500;
+        .bet-amount span {font-size: 14px; color: #00d2ff;}
+        .btn-predict {
+            width: 100%; padding: 12px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            border: none; border-radius: 10px; color: white;
+            font-size: 14px; font-weight: 700; cursor: pointer;
         }
+        .btn-predict:disabled {opacity: 0.4; cursor: not-allowed;}
+        .pot {text-align: center; font-size: 11px; color: #666; margin-top: 8px;}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="banner-ready.jpg" alt="FWC Club Banner">
-            <h1>FWC CLUB</h1>
-            <p>Predict World Cup 2026 & Earn $FWC Tokens</p>
+            <img src="banner-ready.jpg" alt="FWC Club">
+            <h1>FWC PREDICT</h1>
         </div>
 
         <div class="card">
-            <div class="card-title">
-                <span class="step">1</span>
-                Connect TON Wallet
-            </div>
+            <h2>1. Connect Wallet</h2>
             <div id="ton-connect"></div>
-            <div class="wallet-connected" id="wallet-connected">
-                <div class="wallet-label">Connected Wallet</div>
-                <div class="wallet-address" id="wallet-address"></div>
+            <div class="wallet-info" id="wallet-info">
+                Connected: <span id="wallet-address"></span>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">
-                <span class="step">2</span>
-                Featured Matches
-            </div>
-            <div class="match-list">
-                <div class="match">
-                    <div class="team">Brazil</div>
-                    <div class="vs">VS</div>
-                    <div class="team">Argentina</div>
-                </div>
-                <div class="match">
-                    <div class="team">France</div>
-                    <div class="vs">VS</div>
-                    <div class="team">England</div>
-                </div>
-                <div class="match">
-                    <div class="team">Germany</div>
-                    <div class="vs">VS</div>
-                    <div class="team">Spain</div>
-                </div>
-            </div>
-            <button class="btn-primary" id="predict-btn" disabled>Connect Wallet to Start</button>
-        </div>
-
-        <div class="footer">
-            <div class="footer-text">Powered by FWC Club • World Cup 2026</div>
+            <h2>2. Predict 5 Matches</h2>
+            <div id="matches-list"></div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        tg.setHeaderColor('#0D0D0D');
-        tg.setBackgroundColor('#0D0D0D');
+        tg.ready(); tg.expand();
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://beubon.github.io/fwc-game/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
-        const walletConnected = document.getElementById('wallet-connected');
-        const walletAddress = document.getElementById('wallet-address');
-        const predictBtn = document.getElementById('predict-btn');
+        const matches = [
+            {id: 1, team1: 'Brazil', team2: 'Argentina', time: 'Dec 10, 20:00'},
+            {id: 2, team1: 'France', team2: 'England', time: 'Dec 11, 23:00'},
+            {id: 3, team1: 'Germany', team2: 'Spain', time: 'Dec 12, 20:00'},
+            {id: 4, team1: 'Portugal', team2: 'Netherlands', time: 'Dec 13, 23:00'},
+            {id: 5, team1: 'Italy', team2: 'Belgium', time: 'Dec 14, 20:00'}
+        ];
+
+        let userWallet = null;
+
+        function renderMatches() {
+            const list = document.getElementById('matches-list');
+            list.innerHTML = matches.map(m => `
+                <div class="match">
+                    <div class="match-header">
+                        <span>Match ${m.id}</span>
+                        <span>${m.time}</span>
+                    </div>
+                    <div class="teams">
+                        <div class="team">${m.team1}</div>
+                        <div class="vs">VS</div>
+                        <div class="team">${m.team2}</div>
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="score1-${m.id}" placeholder="0" min="0" max="20">
+                        <span>:</span>
+                        <input type="number" id="score2-${m.id}" placeholder="0" min="0" max="20">
+                    </div>
+                    <div class="bet-amount">
+                        <input type="number" id="bet-${m.id}" placeholder="Bet amount" min="0.1" step="0.1">
+                        <span>TON</span>
+                    </div>
+                    <button class="btn-predict" id="btn-${m.id}" onclick="placeBet(${m.id})" disabled>
+                        Connect Wallet First
+                    </button>
+                    <div class="pot">Total Pot: 12.5 TON</div>
+                </div>
+            `).join('');
+        }
+
+        function updateButtons() {
+            matches.forEach(m => {
+                const btn = document.getElementById(`btn-${m.id}`);
+                if (userWallet) {
+                    btn.disabled = false;
+                    btn.textContent = `Place Bet`;
+                } else {
+                    btn.disabled = true;
+                    btn.textContent = 'Connect Wallet First';
+                }
+            });
+        }
+
+        async function placeBet(matchId) {
+            const score1 = document.getElementById(`score1-${matchId}`).value;
+            const score2 = document.getElementById(`score2-${matchId}`).value;
+            const betAmount = document.getElementById(`bet-${matchId}`).value;
+
+            if (!score1 || !score2 || !betAmount) {
+                tg.showAlert('Please enter score and bet amount!');
+                return;
+            }
+
+            if (parseFloat(betAmount) < 0.1) {
+                tg.showAlert('Minimum bet is 0.1 TON');
+                return;
+            }
+
+            // Demo transaction - thay bằng contract thật sau
+            tg.showConfirm(`Confirm bet: ${score1}-${score2} with ${betAmount} TON?`, (confirmed) => {
+                if (confirmed) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    tg.showAlert(`Bet placed! Match ${matchId}: ${score1}-${score2} | ${betAmount} TON\n\nTx will be sent in real version.`);
+                }
+            });
+        }
 
         tonConnectUI.onStatusChange(wallet => {
+            const walletInfo = document.getElementById('wallet-info');
+            const walletAddress = document.getElementById('wallet-address');
+            
             if (wallet) {
+                userWallet = wallet;
                 const address = wallet.account.address;
-                walletAddress.textContent = address.slice(0, 8) + '...' + address.slice(-6);
-                walletConnected.style.display = 'block';
-                predictBtn.disabled = false;
-                predictBtn.textContent = 'Start Predicting';
+                walletAddress.textContent = address.slice(0, 6) + '...' + address.slice(-4);
+                walletInfo.style.display = 'block';
+                updateButtons();
                 tg.HapticFeedback.notificationOccurred('success');
             } else {
-                walletConnected.style.display = 'none';
-                predictBtn.disabled = true;
-                predictBtn.textContent = 'Connect Wallet to Start';
+                userWallet = null;
+                walletInfo.style.display = 'none';
+                updateButtons();
             }
         });
 
-        predictBtn.addEventListener('click', () => {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showPopup({
-                title: 'Coming Soon',
-                message: 'Prediction feature will be available when World Cup 2026 starts. Stay tuned!',
-                buttons: [{type: 'ok'}]
-            });
-        });
+        renderMatches();
+        updateButtons();
     </script>
 </body>
 </html>
