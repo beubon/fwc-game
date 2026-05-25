@@ -3,142 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FWC Predict - World Cup 2026</title>
+    <title>FWC Club - Stake & Predict</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {margin: 0; padding: 0; box-sizing: border-box;}
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0A0A0A; color: #fff; padding: 16px; min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: #0A0A0F;
+            color: #fff;
+            padding: 16px;
+            min-height: 100vh;
         }
         .container {max-width: 500px; margin: 0 auto;}
-        .header {text-align: center; margin-bottom: 20px;}
-        .header img {width: 100%; max-width: 400px; border-radius: 16px; margin-bottom: 12px;}
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0,210,255,0.1), rgba(58,123,213,0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(0,210,255,0.2);
+        }
         .header h1 {
-            font-size: 24px; margin-bottom: 4px;
+            font-size: 28px; font-weight: 800;
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .header .balance {
+            font-size: 14px; color: #00d2ff; font-weight: 600;
         }
         .card {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px; padding: 16px; margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px; padding: 20px; margin-bottom: 16px;
         }
-        .card h2 {font-size: 16px; margin-bottom: 12px; color: #00d2ff;}
-        #ton-connect {margin: 12px 0; display: flex; justify-content: center;}
+        .card-title {
+            font-size: 14px; font-weight: 700; color: #00d2ff;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+        }
+        #ton-connect {margin: 16px 0; display: flex; justify-content: center;}
         .wallet-info {
-            background: rgba(0, 210, 255, 0.1); border: 1px solid #00d2ff;
-            border-radius: 12px; padding: 10px; margin: 12px 0;
-            text-align: center; display: none; font-size: 12px;
+            background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px; padding: 12px; margin-top: 12px;
+            display: none; font-size: 13px;
         }
         .match {
-            background: rgba(255,255,255,0.03); border-radius: 12px; 
-            padding: 12px; margin-bottom: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 16px; margin-bottom: 12px;
         }
-        .match-header {
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 10px; font-size: 12px; color: #888;
+        .match-time {
+            font-size: 11px; color: #888; margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .teams {
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 12px; font-weight: 600;
+        .match-teams {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
         }
-        .team {flex: 1; text-align: center;}
-        .vs {padding: 0 8px; color: #666;}
-        .score-input {
-            display: flex; gap: 8px; align-items: center; justify-content: center;
-            margin-bottom: 10px;
+        .team {
+            flex: 1; text-align: center;
         }
-        .score-input input {
-            width: 50px; padding: 8px; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
-            color: #fff; text-align: center; font-size: 16px; font-weight: 700;
+        .team-name {
+            font-size: 16px; font-weight: 700; margin-bottom: 4px;
         }
-        .bet-amount {
-            display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
+        .team-flag {
+            font-size: 32px; margin-bottom: 8px;
         }
-        .bet-amount input {
-            flex: 1; padding: 10px; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
-            color: #fff; font-size: 14px;
+        .vs {
+            padding: 0 12px; color: #555; font-weight: 800; font-size: 14px;
         }
-        .bet-amount span {font-size: 14px; color: #00d2ff;}
-        .btn-predict {
-            width: 100%; padding: 12px;
-            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-            border: none; border-radius: 10px; color: white;
-            font-size: 14px; font-weight: 700; cursor: pointer;
+        .score-inputs {
+            display: flex; gap: 12px; align-items: center; justify-content: center;
+            margin-bottom: 16px;
         }
-        .btn-predict:disabled {opacity: 0.4; cursor: not-allowed;}
-        .pot {text-align: center; font-size: 11px; color: #666; margin-top: 8px;}
+        .score-inputs input {
+            width: 60px; height: 60px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px; color: #fff; text-align: center;
+            font-size: 24px; font-weight: 800; font-family: 'Inter', sans-serif;
+        }
+        .score-inputs input:focus {
+            outline: none; border-color: #00d2ff;
+            background: rgba(0,210,255,0.1);
+        }
+        .score-inputs span {font-size: 24px; font-weight: 800; color: #555;}
+        .stake-box {
+            background: rgba(0,210,255,0.08);
+            border: 1px solid rgba(0,210,255,0.3);
+            border-radius: 12px; padding: 14px; margin-bottom: 12px;
+        }
+        .stake-label {
+            font-size: 11px; color: #00d2ff; font-weight: 600;
+            text-transform: uppercase; margin-bottom: 6px;
+        }
+        .stake-amount {
+            font-size: 20px; font-weight: 800; color: #fff;
+        }
+        .btn-bet {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%);
+            border: none; border-radius: 12px; color: white;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.4);
+        }
+        .btn-bet:disabled {
+            opacity: 0.3; cursor: not-allowed; box-shadow: none;
+        }
+        .pot-info {
+            text-align: center; font-size: 11px; color: #666; margin-top: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="banner-ready.jpg" alt="FWC Club">
-            <h1>FWC PREDICT</h1>
+            <h1>FWC CLUB</h1>
+            <div class="balance">Balance: 10,000 $FWC</div>
         </div>
 
         <div class="card">
-            <h2>1. Connect Wallet</h2>
+            <div class="card-title">Connect Wallet</div>
             <div id="ton-connect"></div>
             <div class="wallet-info" id="wallet-info">
-                Connected: <span id="wallet-address"></span>
+                ✅ Connected: <span id="wallet-address"></span>
             </div>
         </div>
 
-        <div class="card">
-            <h2>2. Predict 5 Matches</h2>
-            <div id="matches-list"></div>
-        </div>
+        <div id="matches-container"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
+        tg.setHeaderColor('#0A0A0F');
 
+        // Force Tonkeeper + MyTonWallet, bỏ Telegram Wallet
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://beubon.github.io/fwc-game/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
+            buttonRootId: 'ton-connect',
+            uiPreferences: {
+                theme: 'DARK'
+            },
+            walletsListConfiguration: {
+                includeWallets: [
+                    {
+                        appName: "tonkeeper",
+                        name: "Tonkeeper",
+                        imageUrl: "https://tonkeeper.com/assets/tonconnect-icon.png",
+                        aboutUrl: "https://tonkeeper.com",
+                        universalLink: "https://app.tonkeeper.com/ton-connect",
+                        bridgeUrl: "https://bridge.tonapi.io/bridge",
+                        platforms: ["ios", "android", "chrome", "firefox"]
+                    },
+                    {
+                        appName: "mytonwallet",
+                        name: "MyTonWallet",
+                        imageUrl: "https://static.mytonwallet.io/icon-256.png",
+                        aboutUrl: "https://mytonwallet.io",
+                        universalLink: "https://connect.mytonwallet.io/tonconnect",
+                        bridgeUrl: "https://tonconnectbridge.mytonwallet.io/bridge",
+                        platforms: ["ios", "android", "chrome", "firefox"]
+                    }
+                ]
+            }
         });
 
         const matches = [
-            {id: 1, team1: 'Brazil', team2: 'Argentina', time: 'Dec 10, 20:00'},
-            {id: 2, team1: 'France', team2: 'England', time: 'Dec 11, 23:00'},
-            {id: 3, team1: 'Germany', team2: 'Spain', time: 'Dec 12, 20:00'},
-            {id: 4, team1: 'Portugal', team2: 'Netherlands', time: 'Dec 13, 23:00'},
-            {id: 5, team1: 'Italy', team2: 'Belgium', time: 'Dec 14, 20:00'}
+            {id: 1, team1: 'Brazil', flag1: '🇧🇷', team2: 'Argentina', flag2: '🇦🇷', time: 'Dec 10, 20:00 UTC', pot: '45,230'},
+            {id: 2, team1: 'France', flag1: '🇫🇷', team2: 'England', flag2: '🏴󐁧󐁢󐁥󐁮󐁧󐁿', time: 'Dec 11, 23:00 UTC', pot: '38,100'},
+            {id: 3, team1: 'Germany', flag1: '🇩🇪', team2: 'Spain', flag2: '🇪🇸', time: 'Dec 12, 20:00 UTC', pot: '52,890'},
+            {id: 4, team1: 'Portugal', flag1: '🇵🇹', team2: 'Netherlands', flag2: '🇳🇱', time: 'Dec 13, 23:00 UTC', pot: '31,450'},
+            {id: 5, team1: 'Italy', flag1: '🇮🇹', team2: 'Belgium', flag2: '🇧🇪', time: 'Dec 14, 20:00 UTC', pot: '28,670'}
         ];
 
         let userWallet = null;
 
         function renderMatches() {
-            const list = document.getElementById('matches-list');
-            list.innerHTML = matches.map(m => `
-                <div class="match">
-                    <div class="match-header">
-                        <span>Match ${m.id}</span>
-                        <span>${m.time}</span>
-                    </div>
-                    <div class="teams">
-                        <div class="team">${m.team1}</div>
+            const container = document.getElementById('matches-container');
+            container.innerHTML = matches.map(m => `
+                <div class="card">
+                    <div class="match-time">${m.time}</div>
+                    <div class="match-teams">
+                        <div class="team">
+                            <div class="team-flag">${m.flag1}</div>
+                            <div class="team-name">${m.team1}</div>
+                        </div>
                         <div class="vs">VS</div>
-                        <div class="team">${m.team2}</div>
+                        <div class="team">
+                            <div class="team-flag">${m.flag2}</div>
+                            <div class="team-name">${m.team2}</div>
+                        </div>
                     </div>
-                    <div class="score-input">
+                    <div class="score-inputs">
                         <input type="number" id="score1-${m.id}" placeholder="0" min="0" max="20">
                         <span>:</span>
                         <input type="number" id="score2-${m.id}" placeholder="0" min="0" max="20">
                     </div>
-                    <div class="bet-amount">
-                        <input type="number" id="bet-${m.id}" placeholder="Bet amount" min="0.1" step="0.1">
-                        <span>TON</span>
+                    <div class="stake-box">
+                        <div class="stake-label">Stake Amount</div>
+                        <div class="stake-amount">1,000 $FWC</div>
                     </div>
-                    <button class="btn-predict" id="btn-${m.id}" onclick="placeBet(${m.id})" disabled>
+                    <button class="btn-bet" id="btn-${m.id}" onclick="placeBet(${m.id})" disabled>
                         Connect Wallet First
                     </button>
-                    <div class="pot">Total Pot: 12.5 TON</div>
+                    <div class="pot-info">Total Pot: ${m.pot} $FWC</div>
                 </div>
             `).join('');
         }
@@ -146,38 +218,38 @@
         function updateButtons() {
             matches.forEach(m => {
                 const btn = document.getElementById(`btn-${m.id}`);
-                if (userWallet) {
-                    btn.disabled = false;
-                    btn.textContent = `Place Bet`;
-                } else {
-                    btn.disabled = true;
-                    btn.textContent = 'Connect Wallet First';
+                if (btn) {
+                    if (userWallet) {
+                        btn.disabled = false;
+                        btn.textContent = 'STAKE 1000 $FWC & Predict';
+                    } else {
+                        btn.disabled = true;
+                        btn.textContent = 'Connect Wallet First';
+                    }
                 }
             });
         }
 
-        async function placeBet(matchId) {
+        function placeBet(matchId) {
             const score1 = document.getElementById(`score1-${matchId}`).value;
             const score2 = document.getElementById(`score2-${matchId}`).value;
-            const betAmount = document.getElementById(`bet-${matchId}`).value;
 
-            if (!score1 || !score2 || !betAmount) {
-                tg.showAlert('Please enter score and bet amount!');
+            if (!score1 || !score2) {
+                tg.showAlert('Please enter both scores!');
+                tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
-            if (parseFloat(betAmount) < 0.1) {
-                tg.showAlert('Minimum bet is 0.1 TON');
-                return;
-            }
-
-            // Demo transaction - thay bằng contract thật sau
-            tg.showConfirm(`Confirm bet: ${score1}-${score2} with ${betAmount} TON?`, (confirmed) => {
-                if (confirmed) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    tg.showAlert(`Bet placed! Match ${matchId}: ${score1}-${score2} | ${betAmount} TON\n\nTx will be sent in real version.`);
+            const match = matches.find(m => m.id === matchId);
+            tg.showConfirm(
+                `Confirm Bet:\n\n${match.team1} ${score1} - ${score2} ${match.team2}\n\nStake: 1,000 $FWC`,
+                (confirmed) => {
+                    if (confirmed) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                        tg.showAlert(`Bet placed successfully!\n\n1,000 $FWC staked on ${match.team1} ${score1}-${score2} ${match.team2}\n\nGood luck! 🎉`);
+                    }
                 }
-            });
+            );
         }
 
         tonConnectUI.onStatusChange(wallet => {
@@ -187,7 +259,7 @@
             if (wallet) {
                 userWallet = wallet;
                 const address = wallet.account.address;
-                walletAddress.textContent = address.slice(0, 6) + '...' + address.slice(-4);
+                walletAddress.textContent = address.slice(0, 8) + '...' + address.slice(-6);
                 walletInfo.style.display = 'block';
                 updateButtons();
                 tg.HapticFeedback.notificationOccurred('success');
